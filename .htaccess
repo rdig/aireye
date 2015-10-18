@@ -1,0 +1,12 @@
+# default_charset "UTF-8"
+# date.timezone "Europe/Bucharest"
+
+# Disabled for hosting providers that do not support it
+# Options +SymLinksIfOwnerMatch
+
+Options -Indexes
+
+AddDefaultCharset UTF-8
+AddType image/svg+xml svg
+AddType image/svg+xml svgz
+AddEncoding gzip svgz

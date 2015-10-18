@@ -1,0 +1,6 @@
+# Sublime text project files
+*.sublime-project
+*.sublime-workspace
+
+# Fuse temporary files
+.fuse*
