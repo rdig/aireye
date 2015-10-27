@@ -1,70 +1,89 @@
 window.addEventListener('load', function() {
-	ae.drawMap();
 	interfaceDisplay.setUtcClock('timeDisplay');
 	interfaceDisplay.showHideHeader('headerControl');
+	try {
+		ae.drawMap();
+		setInterval(function() {
+			ae.drawAirplanes();
+		}, 2000);
+	} catch(error) {
+		// TODO
+		// Popup an alert to the user informing him that something went wrong
+		// Tell him also to check his console.
+		console.log("The google maps object is not defined. " + error);
+	}
 }, false);
 
-// If the window / screen resizes bring us back to the center of the map
+// If the window resizes bring us back to the center of the map
 window.addEventListener('resize', function() {
-	ae.gMap.setCenter({lat: ae.trackerCoordinates.lat, lng: ae.trackerCoordinates.lon});
+	var centerCoordinates = ae.getTrackerCoordinates();
+	ae.gMap.setCenter({lat: centerCoordinates.latitude, lng: centerCoordinates.longitude});
 }, false);
 
 // Object for dealing with Google Maps
 var ae = {
 
-	// Tracker coordinates that are used in various places
-	// This represents the ADS-B Tracker
-	// TODO: A way to deal with multiple trackers
-	trackerCoordinates : {
-		lat : 46.552345,
-		lon : 24.568242,
-	},
-
-	// Coordinates for local interest points that are going to be highlighted on the map
-	// Size determines the radius of the circle around them
-	localAirports : {
-		lrtm : {
-			size: 3,
-			lat: 46.468018,
-			lon: 24.413123,
-		},
-		aerodromTgm : {
-			size : 1,
-			lat : 46.534964,
-			lon : 24.532018,
-		},
-		lrcl : {
-			size: 4,
-			lat: 46.785082,
-			lon: 23.686362,
-		},
-		topaz : {
-			size: 4,
-			lat: 46.503075,
-			lon: 23.888277,
-		},
-		ghindari : {
-			size: 1,
-			lat: 46.519267,
-			lon: 24.944874,
-		},
-		luncani : {
-			size: 1,
-			lat: 46.480782,
-			lon: 23.934334,
-		}
-	},
-
-	// The variable that will hold the new map instance so we can use it outside of the 
+	// The variable that will hold the new map instance so we can use it outside of the
 	// drawMap() function
 	gMap : null,
 
+	// For holding airplanes markers instances
+	airplanesMarkers : {},
+
+	// Getter for tracker coordinates that are used in various places
+	// This represents the ADS-B Tracker
+	//
+	// TODO
+	// A way to deal with multiple trackers
+	getTrackerCoordinates : function() {
+		return gen.fetchJSONData('tracker.json');
+	},
+
+	// Getter for coordinates of local interest points that are going to be highlighted on the map
+	// Size determines the radius of the circle around them
+	getLocalAirports : function() {
+		return gen.fetchJSONData('local-airports.json');
+	},
+
+	// Set Google Maps options (basically disable all controls)
+	getMapOptions : function(coordObject) {
+		return {
+			backgroundColor : "#010101",
+			center : new google.maps.LatLng(coordObject.latitude, coordObject.longitude),
+			zoom : 11,
+			maxZoom : 15,
+			minZoom : 8,
+			mapTypeControl : false,
+			streetViewControl : false,
+			zoomControl : false,
+			panControl : false,
+		}
+	},
+
+	// Getter for plane JSON data gennerated by the adsb tracker
+	// We are using PHP glue code because of web server limitations (Check the php for details)
+	//
+	// TODO
+	// Modify the dump1090 source and remove the built in web server
+	// (or set it's Access-Control-Allow-Origin header
+	getAirplanesData : function() {
+		var rawAirplaneData = gen.fetchJSONData('getCorsJSON.php', 'functions/'),
+			airplaneDataObject= {};
+		for (var i=0; i<rawAirplaneData.length; i+=1) {
+			if (rawAirplaneData[i]["hex"] !== 'undefined') {
+				airplaneDataObject[rawAirplaneData[i]["hex"]] = rawAirplaneData[i];
+			}
+		}
+		// return rawAirplaneData;
+		return airplaneDataObject;
+	},
+
 	// Draw distance circles (since we are dealing with airplanes, they are in miles)
-	drawDistanceCircles : function (mapInstance, nrCircles) {
+	drawDistanceCircles : function (mapInstance, nrCircles, coordObject) {
 		for (var i=10; i<=nrCircles*10; i+=10) {
 			var newCircle = new google.maps.Circle({
 				map : mapInstance,
-				center : {lat: this.trackerCoordinates.lat, lng: this.trackerCoordinates.lon},
+				center : {lat: coordObject.latitude, lng: coordObject.longitude},
 				radius : i*1852,
 				fillOpacity: 0,
 				strokeWeight: 1,
@@ -90,36 +109,95 @@ var ae = {
 		}
 	},
 
-	// Set Google Maps options (basically disable all controls)
-	mapOptions : function() {
-		return {
-			backgroundColor : "#010101",
-			center : new google.maps.LatLng(this.trackerCoordinates.lat, this.trackerCoordinates.lon),
-			zoom : 11,
-			maxZoom : 15,
-			minZoom : 8,
-			mapTypeControl : false,
-			streetViewControl : false,
-			zoomControl : false,
-			panControl : false,
-		}
-	},
-
 	// Set map styles, options, instantiate a new map object, start drawing distance circles,
 	// start drawing highlights
 	drawMap : function() {
 		var customMapType = new google.maps.StyledMapType(
+			// Generated using Google's Maps Styling Wizard
 			[ { "stylers": [ { "hue": "#22ff00" }, { "saturation": -62 }, { "visibility": "simplified" }, { "invert_lightness": true }, { "lightness": -64 } ] },{ "featureType": "administrative", "stylers": [ { "visibility": "simplified" }, { "color": "#333333" } ] },{ "featureType": "poi", "stylers": [ { "visibility": "off" } ] },{ "featureType": "road", "stylers": [ { "visibility": "on" }, { "lightness": -50 } ] },{ "featureType": "transit", "stylers": [ { "visibility": "off" } ] }, { "featureType": "transit.station.airport", "elementType": "geometry", "stylers": [ { "visibility": "on" },	{ "invert_lightness": true }, { "weight": 8 }, { "color": "#27AE60" } ] }, { "featureType": "water", "stylers": [ { "visibility": "off" } ] } ],
 			{ name: 'Aireye Styled Map'}),
-			customMapTypeId = 'ae_styled_map';
+			customMapTypeId = 'ae_styled_map',
+			localAirports = this.getLocalAirports(),
+			trackerCoordinates = this.getTrackerCoordinates();
 
-		this.gMap = new google.maps.Map(document.getElementById('googleMap'), this.mapOptions());
+		this.gMap = new google.maps.Map(document.getElementById('googleMap'), this.getMapOptions(trackerCoordinates));
 		this.gMap.mapTypes.set(customMapTypeId, customMapType);
 		this.gMap.setMapTypeId(customMapTypeId);
 
-		this.drawDistanceCircles(this.gMap, 20);
-		this.drawAirportHighlight(this.gMap, this.localAirports);
+		this.drawDistanceCircles(this.gMap, 20, trackerCoordinates);
+		this.drawAirportHighlight(this.gMap, localAirports);
 	},
+
+	// Create a new plane marker which we will be updating with new data as we receive it
+	//
+	// TODO
+	// Create a nicer icon for the plane using SVG Path data
+	// (see: http://www.w3.org/TR/SVG/paths.html#PathData)
+	drawSingleAirplane : function(planeObject) {
+		return new google.maps.Marker({
+			position: new google.maps.LatLng(planeObject.lat, planeObject.lon),
+			icon: {
+				path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+				scale: 3,
+				strokeColor : '#FFFFFF',
+				rotation : planeObject.track,
+			},
+			map: this.gMap,
+		});
+	},
+
+	// Check if we are tracking the current airplane in the @param object
+	// If we are, and it's not stale (last seen more than 30 seconds ago) update it with new data
+	// If it's stale, remove it
+	updateAirplanesMarkers : function(planeObject) {
+		if (this.airplanesMarkers.hasOwnProperty(planeObject['hex'])) {
+			if (planeObject['seen'] > 30) {
+				this.removeStaleAirplaneMarker(this.airplanesMarkers[planeObject['hex']]);
+				return true;
+			} else {
+				this.airplanesMarkers[planeObject['hex']].setPosition(new google.maps.LatLng(planeObject['lat'], planeObject['lon']));
+				this.airplanesMarkers[planeObject['hex']]['lastSeen'] = 0;
+				return true;
+			}
+		}
+		return false;
+	},
+
+	// Remove the aiplane marker object.
+	// Remove it from the map and also delete the object key (maybe a palne with the same hex number will appear again)
+	removeStaleAirplaneMarker : function(planeObject) {
+		planeObject.setMap(null);
+		delete planeObject;
+	},
+
+	// Check if old plane data exists, if not add it
+	// Update plane data and add new planes / remove old planes
+	// Save new plane data
+	// This method should be called in a loop / a interval / a timeout,
+	// else the plane markers won't be updated
+	drawAirplanes : function() {
+		var newAirplanesData = this.getAirplanesData(),
+			trackedAirplanes = this.airplanesMarkers
+			airplaneDataValidator = function(planeObject) {
+				if (planeObject['validposition'] === 0) { return false; }
+				return true;
+			};
+		if (Object.keys(this.airplanesMarkers).length < 1) {
+			for (var key in newAirplanesData) {
+				if (airplaneDataValidator(newAirplanesData[key])) {
+					this.airplanesMarkers[key] = this.drawSingleAirplane(newAirplanesData[key]);
+				}
+			}
+		} else {
+			for (var key in newAirplanesData) {
+				if (airplaneDataValidator(newAirplanesData[key])) {
+					if (!this.updateAirplanesMarkers(newAirplanesData[key])) {
+						this.airplanesMarkers[key] = this.drawSingleAirplane(newAirplanesData[key]);
+					}
+				}
+			}
+		}
+	}
 
 };
 
@@ -145,7 +223,7 @@ var interfaceDisplay = {
 		var c = document.getElementById(el);
 		c.addEventListener('click', function() {
 			var cl = this.childNodes[1].className;
-			console.log(cl);
+			// console.log(cl);
 			if (cl.indexOf('open') > -1) {
 				document.getElementsByTagName('header')[0].style.marginLeft = '100%';
 				this.childNodes[1].className = cl.replace(' open', '');
@@ -154,6 +232,20 @@ var interfaceDisplay = {
 				this.childNodes[1].className = cl + " open";
 			}
 		});
+	},
+
+};
+
+// Object for general actions
+var gen = {
+
+	// Wrapper method for *syncronous* request of (json) files
+	fetchJSONData : function(filename, location) {
+		location = location || 'data/';
+		request = new XMLHttpRequest();
+		request.open('GET', location + filename, false);
+		request.send(null);
+		return JSON.parse(request.responseText);
 	},
 
 };
