@@ -129,17 +129,17 @@ var ae = {
 	},
 
 	// Create a new plane marker which we will be updating with new data as we receive it
-	//
-	// TODO
-	// Create a nicer icon for the plane using SVG Path data
-	// (see: http://www.w3.org/TR/SVG/paths.html#PathData)
 	drawSingleAirplane : function(planeObject) {
 		return new google.maps.Marker({
 			position: new google.maps.LatLng(planeObject.lat, planeObject.lon),
 			icon: {
-				path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-				scale: 3,
-				strokeColor : '#FFFFFF',
+				path : "M 9 0 L 11 0 L 11 10 L 15 10 L 15 20 L 5 20 L 5 10 L 9 10 L 9 12 L 7 12 L 7 18 L 13 18 L 13 12 L 11 12 L 11 14 L 9 14 Z",
+				strokeWeight : 0,
+				fillColor : '#FFFFFF',
+				fillOpacity: 1,
+				size: new google.maps.Size(20, 20),
+				origin: new google.maps.Point(0, 0),
+				anchor: new google.maps.Point(10, 10),
 				rotation : planeObject.track,
 			},
 			map: this.gMap,
