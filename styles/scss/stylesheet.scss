@@ -10,7 +10,11 @@ $clock-background: #000000;
 $hider-background: #222222;
 $hider-color: #FFFFFF;
 $hider-background-hover: #2C3E50;
-
+$plane-data-background: #111111;
+$plane-data-text: #ffffff;
+$tracked-planes-background: #2c3528;
+$tracked-planes-text: #ffffff;
+$squawk-warning-color: #E74C3C;
 
 // Images
 $sprite-map: "../media/sprites/ae-sprite-v1-compressed.svgz";
@@ -35,6 +39,11 @@ $logo-text: -132px -63px;
 	background-image: url($sprite-map), none;
 	background-repeat: no-repeat;
 }
+@mixin default_transition_all {
+	-webkit-transition: all 0.5s ease-out;
+	-moz-transition: all 0.5s ease-out;
+	transition: all 0.5s ease-out;
+}
 
 html, body { height: 100%; }
 body {
@@ -44,6 +53,10 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 12px;
 	color: $body-text-color;
+}
+p {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
 }
 header {
 	min-width: 80px;
@@ -55,9 +68,7 @@ header {
 	right: 170px;
 	z-index: 2;
 	@include default_shadow;
-	-webkit-transition: all 0.5s ease-out;
-	-moz-transition: all 0.5s ease-out;
-	transition: all 0.5s ease-out;
+	@include default_transition_all;
 	padding: 0 20px 0 20px;
 	.logo {
 		text-decoration: none;
@@ -214,4 +225,59 @@ header {
 }
 .map-overlay {
 	height: 100%;
+}
+.plane-data {
+	display: none;
+	position: fixed;
+	background-color: $plane-data-background;
+	color: $plane-data-text;
+	left: 0px;
+	right: 60px;
+	bottom: 0px;
+	padding: 14px 10px 14px 10px;
+	@include default_transition_all;
+	span {
+		font-weight: 700;
+		margin: 0 10px 0 3px;
+	}
+	.warning {
+		color: $squawk-warning-color;
+	}
+	@media (min-width: 600px) {
+		left: 76px;
+		padding: 14px 15px 14px 15px;
+	}
+	@media (min-width: 800px) {
+		opacity: 0.8;
+		padding: 19px 15px 19px 15px;
+		right: 190px;
+	}
+	@media (min-width: 1000px) {
+		right: 210px;
+		left: 90px;
+	}
+}
+.tracked-planes {
+	display: block;
+	position: fixed;
+	background-color: $tracked-planes-background;
+	color: $tracked-planes-text;
+	width: 60px;
+	text-align: center;
+	right: 0px;
+	bottom: 0px;
+	padding: 19px 0px 19px 0px;
+	font-weight: 700;
+	.title {
+		display: none;
+		font-weight: 400;
+		margin: 0 5px 0 0;
+		@media (min-width: 800px) { display: inline; }
+	}
+	@media (min-width: 800px) {
+		opacity: 0.6;
+		width: 189px;
+		bottom: 14px;
+		padding: 12px 0px 12px 0px;
+	}
 }

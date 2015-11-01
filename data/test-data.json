@@ -2,7 +2,7 @@
 {"hex":"8960d1", "squawk":"0000", "flight":"UAE139  ", "lat":0.000000, "lon":0.000000, "validposition":0, "altitude":36000,  "vert_rate":0,"track":304, "validtrack":1,"speed":440, "messages":11, "seen":78},
 {"hex":"4b8439", "squawk":"5375", "flight":"PGT30E  ", "lat":46.266953, "lon":24.341684, "validposition":1, "altitude":36000,  "vert_rate":0,"track":321, "validtrack":1,"speed":417, "messages":873, "seen":0},
 {"hex":"800721", "squawk":"0102", "flight":"JAI227  ", "lat":46.547303, "lon":23.908310, "validposition":1, "altitude":35000,  "vert_rate":0,"track":128, "validtrack":1,"speed":508, "messages":806, "seen":1},
-{"hex":"3c7204", "squawk":"5365", "flight":"BER7461 ", "lat":46.553375, "lon":24.341818, "validposition":1, "altitude":38000,  "vert_rate":-64,"track":308, "validtrack":1,"speed":441, "messages":2021, "seen":0},
+{"hex":"3c7204", "squawk":"7600", "flight":"BER7461 ", "lat":46.553375, "lon":24.341818, "validposition":1, "altitude":38000,  "vert_rate":-64,"track":308, "validtrack":1,"speed":441, "messages":2021, "seen":0},
 {"hex":"06a052", "squawk":"6523", "flight":"QTR707  ", "lat":46.912366, "lon":24.043157, "validposition":1, "altitude":31975,  "vert_rate":0,"track":310, "validtrack":1,"speed":450, "messages":1703, "seen":14},
 {"hex":"7c4922", "squawk":"2212", "flight":"QFA9    ", "lat":46.797289, "lon":24.255821, "validposition":1, "altitude":40000,  "vert_rate":0,"track":310, "validtrack":1,"speed":463, "messages":584, "seen":69},
 {"hex":"06a0bb", "squawk":"5364", "flight":"QTR159  ", "lat":47.003998, "lon":24.208717, "validposition":1, "altitude":40000,  "vert_rate":-64,"track":313, "validtrack":1,"speed":465, "messages":3559, "seen":185},

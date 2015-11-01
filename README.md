@@ -2,11 +2,9 @@
 
 This is a simple web interface for plotting aircrafts tracked through ADS-B with an RTLSDR dongle
 
+### demo
+
 A live version can be found here [http://aireye.glogovetan.com](http://aireye.glogovetan.com)
-
-### still in development
-
-While it is functioning, this piece of code is still in development and may contain bugs or have pieces of functionality still missing
 
 ### dump1090
 
@@ -16,7 +14,16 @@ This whole interface relies on the data given out by [antirez's dump1090](https:
 
 If you want to get the interface to work you have to:
 - setup your dump1090 decoder with the `--net` option (I will write a guide for that at some point)
-- generate and change the Google Maps API key. You can signup for one [here](https://developers.google.com/maps/signup)
+- edit `functions/getCorsJSON.php` and set your tracker's data.json location. It should be in `http://<your_tracker_station_ip>/dump1090/data.json`. (This is a glue code to overcome dump1090's internal web server, and it's lack of header configurations)
+
+### personalisation
+
+- Update your trackers's latitude / longitude location in `data/tracker.json`
+- Set your local airports in `data/local-airports.json` so that they will be highlighted on the map
+
+### still in development
+
+While it is functioning, this piece of code is still in development and may contain bugs or have pieces of functionality still missing
 
 ### credits
 
