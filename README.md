@@ -16,7 +16,7 @@ If you want to get the interface to work you have to:
 - setup your dump1090 decoder with the `--net` option
 - edit `functions/getCorsJSON.php` and set your tracker's data.json location. It should be in `http://<your_tracker_station_ip>/dump1090/data.json`. (This is a glue code to overcome dump1090's internal web server, and it's lack of header configurations)
 
-For more detailed installation instructions go to [http://glogovetan.com/experiments-aireye](http://glogovetan.com/experiments-aireye#installation)
+For more detailed installation instructions go to [http://glogovetan.com/side-projects/aireye](http://glogovetan.com/side-projects/aireye)
 
 ### personalisation
 
