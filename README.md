@@ -2,10 +2,6 @@
 
 This is a simple web interface for plotting aircrafts tracked through ADS-B with an RTLSDR dongle
 
-### demo
-
-A live version can be found here [http://aireye.glogovetan.com](http://aireye.glogovetan.com)
-
 ### dump1090
 
 This whole interface relies on the data given out by [antirez's dump1090](https://github.com/antirez/dump1090) through a .json file
